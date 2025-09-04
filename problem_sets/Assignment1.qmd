@@ -1,5 +1,8 @@
-Assignment 1: Quarto template
-================
+---
+title: "Assignment 1"
+format: gfm
+editor: visual
+---
 
 ## Instructions: Please read through this before you begin
 
