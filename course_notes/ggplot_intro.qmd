@@ -1,0 +1,27 @@
+---
+title: "Cars"
+format: html
+editor: visual
+---
+
+## Quarto
+
+```{r}
+#| message: false
+
+library(tidyverse)
+```
+
+Let's expore data visualization options
+
+```{r}
+cars
+view(cars)
+```
+
+```{r}
+#| message: false
+#| warning: false
+library(tidyverse)
+mpg
+```
