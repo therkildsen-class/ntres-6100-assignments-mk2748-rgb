@@ -86,3 +86,13 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
 
 ggplot(data=mpg, mapping=aes(x=displ, y=hwy)) + 
   geom_point(mapping = aes(x=displ, y=hwy, size = cyl), color = "blue", shape = 2) + geom_smooth()
+
+
+library(tidyverse)
+
+ggplot(data=mpg, mapping=aes(x=displ, y=hwy)) + 
+  geom_point(mapping = aes(x=displ, y=hwy, size = cyl), color = "blue", shape = 2) + geom_smooth()
+
+ggsave(filename= "plots/hwy_vs_displ.pdf", plot1, width=8, height=4)
+?ggsave
+

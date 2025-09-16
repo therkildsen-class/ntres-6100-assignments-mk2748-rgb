@@ -22,7 +22,10 @@ Please use the following table to grade the student's assignment:
 |      8      |                 |                     |               |
 |      9      |                 |                     |               |
 
-Assignment 2:
+Assignment 2: <https://github.com/mk2748-rgb/Assignment2_project.git>
 
 Assignment 3:
 
+-Website:
+
+-Repo:
