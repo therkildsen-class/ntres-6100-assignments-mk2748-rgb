@@ -12,8 +12,8 @@ Please use the following table to grade the student's assignment:
 
 | Assignment# | Fully completed | Partially completed | Not completed |
 |:-----------:|:---------------:|:-------------------:|:-------------:|
-|      1      |       X          |                     |               |
-|      2      |        X         |                     |               |
+|      1      |        X        |                     |               |
+|      2      |        X        |                     |               |
 |      3      |                 |                     |               |
 |      4      |                 |                     |               |
 |      5      |                 |                     |               |
@@ -26,6 +26,6 @@ Assignment 2: <https://github.com/mk2748-rgb/Assignment2_project.git>
 
 Assignment 3:
 
--Website:
+-Website: [**https://mk2748-rgb.github.io/assignment-3-mk2748/**](https://mk2748-rgb.github.io/assignment-3-mk2748/)
 
--Repo:
+-Repo: [assignment-3-mk2748](https://github.com/mk2748-rgb/assignment-3-mk2748)
