@@ -30,4 +30,16 @@ filter(coronavirus, country %in% c("US","Canada"))
 filter(coronavirus, country == "France" | country == "Germany" | country == "Italy", type == "death", date == "2021-09-16")
 
 filter(coronavirus, country %in% c("France","Germany","Italy"), type== "death", date == "2021-09-16")
-        
+     
+
+view(count(coronavirus,country))   
+
+select(coronavirus, date, country, type, cases)
+select(coronavirus, -province)
+
+
+select(coronavirus, country, lat, long)
+longley
+
+select(coronavirus, 1:3)
+select(coronavirus, date:cases)
