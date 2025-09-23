@@ -150,3 +150,111 @@ vacc |>
   mutate(doses_per_vaxxed = doses_admin / people_at_least_one_dose)  |>
   ggplot() +
   geom_histogram(mapping = aes(x = doses_per_vaxxed))
+
+
+library(tidyverse)
+library(skimr)#install.packages("skimr")
+coronavirus <- read_csv('https://raw.githubusercontent.com/RamiKrispin/coronavirus/master/csv/coronavirus.csv')
+
+view(coronavirus)
+
+coronavirus |> 
+  filter(type == "confirmed") |> 
+  summarize(sum = sum(cases))
+
+coronavirus |> 
+  filter(type == "confirmed") |>
+  group_by(country) |> 
+  summarize(total_cases = sum(cases))
+
+coronavirus |> 
+  filter(type == "confirmed") |>
+  group_by(country) |> 
+  summarize(total_cases = sum(cases),
+            n = n()) |>
+  arrange(total)
+
+coronavirus |>
+  group_by(date, type) |>
+  summarize(total = sum(cases))
+
+coronavirus |>
+  group_by(date, type) |>
+  summarize(total = sum(cases)) |>
+  filter(date == "2023-01-01")
+
+
+coronavirus |> 
+  filter(type == "death") |> 
+  group_by(date) |> 
+  summarize(total_deaths = sum(cases)) |> 
+  filter(total_deaths == max(total_deaths))
+
+coronavirus |>
+  filter(type == "death") |>
+  group_by(date) |>
+  summarize(total = sum(cases)) |>
+  arrange(-total)
+
+coronavirus |>
+  group_by(type) |>
+  summarize (cases = sum(cases))
+
+gg_base <- coronavirus |>
+  filter(type =="confirmed") |>
+  group_by(date) |>
+  summarize(total_cases = sum(cases)) |>
+  ggplot(mapping=aes(x=date, y=total_cases)) + geom_line()
+
+gg_base + geom_line()
+
+gg_base + geom_point()
+
+gg_base + geom_col(color= "red")
+
+gg_base + geom_area(fill = "red")
+
+gg_base + 
+  geom_point(
+    color = "purple",
+    shape = 17,
+    size = 17,
+    alpha = 0.1
+  )
+
+
+gg_base + geom_point(mapping = aes(size = total_cases, color = total_cases), alpha = 0.4
+) + 
+  theme_minimal() +
+  theme(legend.background = element_rect(fill = "lemonchiffon", color = "grey50", linewidth= 1))
+
+
+gg_base + geom_point(mapping = aes(size = total_cases, color = total_cases), alpha = 0.4
+) + 
+  theme_minimal() + theme(legend.position = "none")
+
+
+gg_base + geom_point(mapping = aes(size = total_cases, color = total_cases), alpha = 0.4
+) + 
+  theme_minimal() + labs(x = "date", y= "total confirmed cases", 
+                         title = str_c("Daily counts of new coronavirus cases", max(coronavirus$date)),
+                         subtitle = "Global sums")
+
+
+coronavirus |>
+  filter(type == "confirmed") |>
+  group_by(date, country) |>
+  summarize(total = sum(cases)) |>
+  ggplot() + 
+  geom_line(mapping = aes(x=date, y=total, color=country))
+
+
+top5 <- coronavirus |>
+  filter(type == "confirmed") |>
+  group_by(country) |>
+  summarize(total= sum(cases)) |>
+  arrange(-total) |>
+  head(5) |>
+  pull(country)
+
+                       
