@@ -142,3 +142,11 @@ vacc |>
   arrange(-vaxxrate) |> 
   filter(vaxxrate > 0.9) |>
   head(5)
+
+
+vacc |> 
+  filter(date == max(date)) |> 
+  select(country_region, continent_name, doses_admin, people_at_least_one_dose, population) |> 
+  mutate(doses_per_vaxxed = doses_admin / people_at_least_one_dose)  |>
+  ggplot() +
+  geom_histogram(mapping = aes(x = doses_per_vaxxed))
