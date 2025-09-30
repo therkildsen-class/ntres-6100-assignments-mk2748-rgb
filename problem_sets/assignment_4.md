@@ -1,0 +1,185 @@
+# assignment_4.qmd
+
+
+library(tidyverse) library(knitr)
+
+economist_data \<-
+read_csv(“https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/EconomistData.csv”)
+
+\#Exercise 1. Corruption and human development
+
+# 1.1. Show the first few rows of economist_data
+
+head(economist_data)
+
+# 1.2 Expore the relationship between human development index (HDI) and corruption perception index (CPI) with a scatter plot as the following.
+
+ggplot(economist_data, aes(x = HDI, y = CPI)) + geom_point() + labs(x =
+“Human Development Index (HDI)”, y = “Corruption Perception Index
+(CPI)”)
+
+# 1.3 Make of color of all points in the previous plot red. ggplot(economist_data, aes(x = HDI, y = CPI)) + geom_point(color = “red”)
+
+# 1.4 Color the points in the previous plot according to the Region variable, and set the size of points to 2.
+
+ggplot(economist_data, aes(x = HDI, y = CPI, color = Region))
+ggplot(economist_data, aes(x = HDI, y = CPI, color = Region)) +
+geom_point(size = 2) \#1.5 Set the size of the points proportional to
+HDI.Rank
+
+ggplot(economist_data, aes(x = HDI, y = CPI,color = Region,size =
+HDI.Rank)) ggplot(economist_data, aes(x = HDI, y = CPI, color = Region,
+size = HDI.Rank)) + geom_point() \#1.6 Fit a smoothing line to all the
+data points in the scatter plot from Excercise 1.4
+ggplot(economist_data, aes(x = HDI, y = CPI, color = Region)) +
+geom_smooth(se=FALSE)
+
+ggplot(economist_data, aes(x = CPI, y = HDI, color = Region)) +
+geom_point() + geom_smooth(se = TRUE)
+
+ggplot(economist_data, aes(x = CPI, y = HDI)) + geom_point(aes(color =
+Region)) + geom_smooth(se = TRUE)
+
+# 1.7 Fit a separate straight line for each region instead, and turn off the confidence interval.
+
+ggplot(economist_data, aes(x = CPI, y = HDI, color = Region)) +
+geom_point() + geom_smooth(method = “lm”, se = FALSE)
+
+# 1.8 Building on top of the previous plot, show each Region in a different facet.
+
+ggplot(economist_data, aes(x = CPI, y = HDI)) + geom_point(aes(color =
+Region)) + geom_smooth(method = “lm”, se = FALSE) + facet_wrap(~Region)
+
+\#1.9 Show the distribution of HDI in each region using density plot.
+Set the transparency to 0.5
+
+ggplot(economist_data, aes(HDI, fill = Region)) + geom_density()
+ggplot(economist_data, aes(HDI, fill = Region)) + geom_density(“0.5”)
+ggplot(economist_data, aes(HDI, fill = Region)) +
+geom_density(alpha=0.5) ggplot(economist_data, aes(HDI, fill =
+Region)) + geom_density(alpha = 0.5) ggplot(economist_data, aes(x = HDI,
+fill = Region)) + geom_density(alpha = 0.5)
+
+colnames(economist_data)
+
+ggplot(data = economist_data, aes(x =
+economist_data$HDI, fill = economist_data$Region)) + geom_density(alpha
+= 0.5)
+
+# 1.10 Show the distribution of HDI in each region using histogram and facetting.
+
+ggplot(economist_data, aes(x = HDI)) + geom_histogram(fill = “pink”,
+color = “black”) + facet_wrap(~Region)
+
+ggplot(economist_data, aes(x = HDI, fill = Region)) +
+geom_histogram(color = 0) + facet_wrap(~Region) \#1.11 Show the
+distribution of HDI in each region using a box plot. Set the
+transparency of these boxes to 0.5 and do not show outlier points with
+the box plot. Instead, show all data points for each country in the same
+plot.
+
+ggplot(economist_data, aes(x = Region, y = HDI, fill = Region)) +
+geom_boxplot(alpha = 0.5, outlier.shape = 0)
+
+ggplot(economist_data, aes(x = Region, y = HDI, fill = Region)) +
+geom_boxplot(alpha = 0.5, outlier.shape = NA)
+
+ggplot(economist_data, aes(x = Region, y = HDI, fill = Region)) +
+geom_boxplot(alpha = 0.5, outlier.shape = NA) + geom_jitter(width = 0.2,
+size = 2, alpha = 0.7) ggplot(economist_data, aes(x = Region, y = HDI,
+fill = Region)) + geom_boxplot(aes(color = Region), alpha = 0.5,
+outlier.shape = NA) + geom_jitter(aes(color = Region), width = 0.2, size
+= 2, alpha = 0.7)
+
+# 1.12 Show the count of countries in each region using a bar plot.
+
+ggplot(economist_data, aes(x = Region, fill = Region)) +
+geom_bar(aes(color=Region))
+
+ggplot(economist_data, aes(x = Region)) + geom_bar(fill = “grey”)
+
+# 1.13 You have now created a variety of different plots of the same dataset. Which of your plots do you think are the most informative? Describe briefly the major trends that you see in the data.
+
+The most informative plot is 1.8, where each region is shown in a
+separate panel with a trend line. This layout makes it easy to compare
+regions and see patterns clearly. Overall, countries with higher CPI
+tend to have higher HDI, although the strength of this trend varies
+between regions. The faceting also helps to spot differences and
+outliers within each region, making the data easier to interpret.
+
+# Exercise 2. Theophylline experiment library(tidyverse) library(knitr)
+
+kable(head(Theoph)) data(“Theoph”)
+
+kable(head(Theoph))
+
+# 2.1 Select columns that contain a lower case “t” in the Theoph dataset. Do not manually list all the columns to include.
+
+Theoph_t \<- Theoph %\>% select(contains(“t”)) Theoph_t
+
+kable(head(Theoph_t))
+
+kable
+
+# 2.2 Rename the Wt column to Weight and conc column to Concentration in the Theoph dataset.
+
+data(“Theoph”) Theoph_renamed \<- Theoph %\>% rename(Weight = Wt,
+Concentration = conc)
+
+data
+
+Theoph_renamed kable(head(Theoph_renamed))
+
+# 2.3 Extract the Dose greater than 4.5 and Time greater than the mean Time.
+
+Theoph_filtered \<- Theoph %\>% filter(Dose \> 4.5, Time \> mean(Time))
+
+Theoph_filtered kable(head(Theoph_filtered))
+
+# 2.4 Sort the Theoph dataset by Wt from smallest to largest and secondarily by Time from largest to smallest.
+
+Theoph_sorted \<- Theoph %\>% arrange(Wt, desc(Time))
+kable(head(Theoph_sorted))
+
+# 2.5 Create a new column called Quantity that equals to Wt x Dose in the Theoph dataset. This will tell you the absolute quantity of drug administered to the subject (in mg). Replace the Dose variable with Quantity.
+
+Theoph_quantity \<- Theoph %\>% mutate(Quantity = Wt \* Dose) %\>%
+select(-Dose) kable(head(Theoph_quantity))
+
+Theoph_quantity \<- Theoph %\>% mutate(Quantity = Wt \* Dose) %\>%
+select(Subject, Wt, Quantity, Time, conc)
+
+kable(head(Theoph_quantity))
+
+# 2.6 Find the mean conc and sum of the Dose received by each test subject.
+
+Theoph %\>% group_by(Subject) %\>% summarise( mean_conc = mean(conc),
+sum_dose = sum(Dose)) %\>%  
+arrange(sum_dose) %\>%  
+slice_head(n = 6) %\>% kable()
+
+# Exercise 3. Unemployment in the US 1967-2015 (OPTIONAL)
+
+library(ggplot2) data(“economics”)  
+head(economics)
+
+head(economics) %\>% kable()
+
+# 3.1 Plot the trend in number of unemployed persons (unemploy) though time using the economics dataset shown above. And for this question only, hide your code and only show the plot.
+
+ggplot(economics, aes(x = date, y = unemploy)) + geom_line()
+
+# 3.2 Edit the plot title and axis labels of the previous plot appropriately. Make y axis start from 0. Change the background theme to what is shown below.
+
+ggplot(economics, aes(x = date, y = unemploy)) + geom_line() +
+ggtitle(“Number of Unemployed Persons in the US Over Time”) +
+xlab(“Year”) + ylab(“Unemployed (in thousands)”) + ylim(0, NA)
+
+# 3.3 Can this general trend of rise in unemployed persons be explained by population growth? Use a figure to answer this question. economics %\>% mutate(unemp_rate = unemploy / pop \* 100) %\>%
+
+economics %\>% mutate(unemp_rate = unemploy / pop \* 100) %\>% head()
+%\>% kable()
+
+# 3.4 Which years in this dataset have the highest unemployment rate on average? List the top five of them in a table.
+
+?
