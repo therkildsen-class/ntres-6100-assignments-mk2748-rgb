@@ -58,3 +58,8 @@ library(gitcreds) # install.packages("gitcreds")
 gitcreds_set()
 
 gitcreds::gitcreds_set()
+create_github_token()
+
+install.packages("usethis")
+usethis::create_github_token()
+gitcreds::gitcreds_set()
