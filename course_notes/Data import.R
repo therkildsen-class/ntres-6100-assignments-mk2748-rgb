@@ -54,6 +54,8 @@ lotr_google <- read_sheet("https://docs.google.com/spreadsheets/d/1X98JobRtA3JGB
 #lotr_google
 
 
+mess = read_tsv("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/refs/heads/main/datasets/messy_data.tsv", locale = locale(decimal_mark = ","), na = c("Missing", "N/A"))
+
 
 lotr_google <- read_sheet("https://docs.google.com/spreadsheets/d/1X98JobRtA3JGBFacs_JSjiX-4DPQ0vZYtNl_ozqF6IE/edit#gid=754443596", sheet="deaths", range="A5:F15")
 lotr_google
@@ -68,3 +70,21 @@ msa <- read_tsv("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science
 parse_number("$100")
 parse_number("80%")
 parse_number("it costs $100")
+
+
+parse_double("1,23", locale= locale(decimal_mark = ","))
+
+parse_number("123.456.789", locale = locale(grouping_mark ="."))
+
+
+mess = read_tsv("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/refs/heads/main/datasets/messy_data.tsv", locale = locale(decimal_mark = ","))
+mess = read_tsv("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/refs/heads/main/datasets/messy_data.tsv", locale = locale(decimal_mark = ","), na = c("Missing", "N/A"))
+
+problems()
+
+
+mess |> 
+  mutate(price = parse_number(price))
+
+
+
