@@ -31,3 +31,5 @@ Assignment 3:
 -Repo: [assignment-3-mk2748](https://github.com/mk2748-rgb/assignment-3-mk2748)
 
 Assignment 4: <https://github.com/therkildsen-class/ntres-6100-assignments-mk2748-rgb/blob/master/problem_sets/assignment_4.qmd>
+
+Assignment 5: <https://github.com/therkildsen-class/ntres-6100-assignments-mk2748-rgb/blob/master/problem_sets/assignment_5.qmd>
