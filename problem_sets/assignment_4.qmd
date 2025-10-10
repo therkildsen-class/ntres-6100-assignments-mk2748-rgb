@@ -209,15 +209,11 @@ kable()
 ggplot(economics, aes(x = date, y = unemploy)) + geom_line()
 ```
 
-
-
-
 # 3.2 Edit the plot title and axis labels of the previous plot appropriately. Make y axis start from 0. Change the background theme to what is shown below.
 
 ```{r}
 ggplot(economics, aes(x = date, y = unemploy)) + geom_line() + ggtitle("Number of Unemployed Persons in the US Over Time") + xlab("Year") + ylab("Unemployed (in thousands)") + ylim(0, NA)
 ```
-
 
 # 3.3 Can this general trend of rise in unemployed persons be explained by population growth? Use a figure to answer this question. economics %\>% mutate(unemp_rate = unemploy / pop \* 100) %\>%
 
@@ -226,10 +222,6 @@ economics %>% mutate(unemp_rate = unemploy / pop* 100) %>%
 head() %>%
 kable()
 ```
-
-
-
-
 
 # 3.4 Which years in this dataset have the highest unemployment rate on average? List the top five of them in a table.
 

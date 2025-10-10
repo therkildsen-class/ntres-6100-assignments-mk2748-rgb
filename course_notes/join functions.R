@@ -73,6 +73,7 @@ planes |>
   filter(is.na(speed))
 
 
+
 flights2 <- flights |> 
   select(year:day, hour, origin, dest, tailnum, carrier)
 flights2
@@ -117,3 +118,32 @@ airports <- airports |>
 
 
 library(maps) #install.packages("maps")
+
+
+
+
+
+library(tidyverse)
+#install.packages("gapminder")
+
+library(gapminder)  #install.packages("gapminder")
+
+
+install.packages("gridExtra")
+library(gridExtra)  #install.packages("gridExtra")
+
+flights2 <- flights |>
+  select(year:day, hour, origin, dest, tailnum, carrier)
+
+planes
+planes_gt100 <- flights2 |>
+  group_by(tailnum)
+
+
+
+
+flights
+planes_gt100
+
+flights |>
+  semi_join(planes_gt100)
