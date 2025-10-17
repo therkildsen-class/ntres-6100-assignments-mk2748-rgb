@@ -234,9 +234,9 @@ head(q_4b)
 
 ```
 
-### 4c. 
-Generate the following plot with the `q_4b` dataset. Use chunk options to adjust the dimensions of the plot to make it longer than the default dimension. Based on this plot, where did the polls get wrong in the 2016 election?
+### 4c.
 
+Generate the following plot with the `q_4b` dataset. Use chunk options to adjust the dimensions of the plot to make it longer than the default dimension. Based on this plot, where did the polls get wrong in the 2016 election?
 
 ```{r}
 ggplot(q_4b, aes(x = polling_error, y = state)) +
@@ -256,4 +256,3 @@ ggplot(q_4b, aes(x = polling_error, y = state)) +
 
 
 ```
-
