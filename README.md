@@ -33,3 +33,5 @@ Assignment 3:
 Assignment 4: <https://github.com/therkildsen-class/ntres-6100-assignments-mk2748-rgb/blob/master/problem_sets/assignment_4.qmd>
 
 Assignment 5: <https://github.com/therkildsen-class/ntres-6100-assignments-mk2748-rgb/blob/master/problem_sets/assignment_5.qmd>
+
+Assignment 6: <https://github.com/therkildsen-class/ntres-6100-assignments-mk2748-rgb/blob/master/problem_sets/assignment_6.qmd>
