@@ -6,8 +6,8 @@ execute:
   echo: true
   message: false
   warning: false
-  
 ---
+
 ```{r}
 
 library(tidyverse) #install.packages(tidyverse)
@@ -15,6 +15,7 @@ library(tidyverse) #install.packages(tidyverse)
 library(knitr) #install.packages(knitr)
 
 ```
+
 # Exercise 1.1 Create the following tibble manually, first using tribble() and then using tibble(). Print both results.
 
 ```{r}
@@ -89,7 +90,6 @@ view(data3)
 
 ```
 
-
 # Exercise 2. Weather station
 
 ## 2.1 Variable descriptions
@@ -114,7 +114,6 @@ kable(weather)
 ```
 
 ## 2.2 Data tidying
-
 
 ```{r}
 url <- "https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/2015y_Weather_Station.csv"
@@ -149,7 +148,6 @@ head(weather_tidy,6) %>% select(1:10)
 
 ```
 
-
 ## 2.3 Using this cleaned dataset, plot the daily variation in ambient temperature on September 25, 2015, as shown below.
 
 ```{r}
@@ -172,7 +170,6 @@ ggplot(weather_sep252015, aes(x = hour, y = AMB_TEMP)) +
 
 ## 2.4 Plot the daily average ambient temperature throughout the year with a continuous line, as shown below.
 
-
 ```{r}
 
 daily_ave <- weather_tidy %>%
@@ -184,6 +181,7 @@ ggplot(daily_ave, aes(x = date, y= avg_temp)) + geom_line()
   
 
 ```
+
 ## 2.5 Plot the total rainfall per month in a bar chart, as shown below.
 
 ```{r}
@@ -191,4 +189,3 @@ ggplot(daily_ave, aes(x = date, y= avg_temp)) + geom_line()
 
 
 ```
-
