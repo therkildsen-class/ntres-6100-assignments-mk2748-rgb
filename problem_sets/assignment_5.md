@@ -2,7 +2,7 @@
 
 
 ``` r
-library(tidyverse)
+library(tidyverse) 
 ```
 
     ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
@@ -19,7 +19,10 @@ library(tidyverse)
 ``` r
 library(knitr)
 
-#install.packages("gapminder")
+library(gapminder) #install.packages("gapminder")
+
+
+library(readr)
 ```
 
 # **Assignment 5: Data transformation and visualization - Part 2**
@@ -55,17 +58,20 @@ housing %>%
 | AK | West | 2008.25 | 233714 | 157458 | 76256 | 32.6 | 1.538 | 1.817 | 2008 | 1 |
 
 ``` r
-housing <- read_csv("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/landdata_states.csv")
+head(housing)
 ```
 
-    Rows: 7803 Columns: 11
-    ── Column specification ────────────────────────────────────────────────────────
-    Delimiter: ","
-    chr (2): State, region
-    dbl (9): Date, Home.Value, Structure.Cost, Land.Value, Land.Share..Pct., Hom...
-
-    ℹ Use `spec()` to retrieve the full column specification for this data.
-    ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+    # A tibble: 6 × 11
+      State region  Date Home.Value Structure.Cost Land.Value Land.Share..Pct.
+      <chr> <chr>  <dbl>      <dbl>          <dbl>      <dbl>            <dbl>
+    1 AK    West   2010.     224952         160599      64352             28.6
+    2 AK    West   2010.     225511         160252      65259             28.9
+    3 AK    West   2010.     225820         163791      62029             27.5
+    4 AK    West   2010      224994         161787      63207             28.1
+    5 AK    West   2008      234590         155400      79190             33.8
+    6 AK    West   2008.     233714         157458      76256             32.6
+    # ℹ 4 more variables: Home.Price.Index <dbl>, Land.Price.Index <dbl>,
+    #   Year <dbl>, Qrtr <dbl>
 
 ### 1.1 Washington DC was not assigned to a region in this dataset. According to the United States Census Bureau, however, DC is part of the South region. Here:
 
@@ -220,7 +226,7 @@ ggplot(mean_land_values, aes(x = Date, y = mean_land_value, color = region)) +
 ## Exercise 2. Life expectancy and GDP per capita 1952-2007
 
 ``` r
-library(gapminder) #install.packages(gapminder)
+#library(gapminder) #install.packages("gapminder")
 gapminder %>%
   head() %>% 
   kable()
@@ -236,8 +242,19 @@ gapminder %>%
 | Afghanistan | Asia      | 1977 |  38.438 | 14880372 |  786.1134 |
 
 ``` r
-library(gapminder)
+gapminder %>% 
+  head() %>% 
+  kable()
 ```
+
+| country     | continent | year | lifeExp |      pop | gdpPercap |
+|:------------|:----------|-----:|--------:|---------:|----------:|
+| Afghanistan | Asia      | 1952 |  28.801 |  8425333 |  779.4453 |
+| Afghanistan | Asia      | 1957 |  30.332 |  9240934 |  820.8530 |
+| Afghanistan | Asia      | 1962 |  31.997 | 10267083 |  853.1007 |
+| Afghanistan | Asia      | 1967 |  34.020 | 11537966 |  836.1971 |
+| Afghanistan | Asia      | 1972 |  36.088 | 13079460 |  739.9811 |
+| Afghanistan | Asia      | 1977 |  38.438 | 14880372 |  786.1134 |
 
 ### 2.1 Use a scatterplot to explore the relationship between per capita GDP (gdpPercap) and life expectancy (lifeExp) in the year 2007.
 
@@ -299,9 +316,6 @@ gapminder %>%
   geom_point(aes(color = continent)) +
   geom_smooth() +
   facet_wrap(~ continent) +
-  ggtitle("GDP per Capita vs Life Expectancy (2007, Faceted by Continent)") +
-  xlab("GDP per Capita") +
-  ylab("Life Expectancy (years)") +
   theme_minimal()
 ```
 
@@ -314,14 +328,67 @@ gapminder %>%
   filter(year == 2007, continent != "Oceania") %>% ggplot(aes(x = gdpPercap, y = lifeExp, color = continent)) +
   geom_point() +
   geom_smooth(se = TRUE) +  
-  facet_wrap(~ continent) +
-  labs(
-    title = "GDP per Capita vs Life Expectancy (2007, Faceted by Continent)",
-    x = "GDP per Capita",
-    y = "Life Expectancy (years)"
-  )
+  facet_wrap(~ continent)
 ```
 
     `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
 
 ![](assignment_5_files/figure-commonmark/unnamed-chunk-10-2.png)
+
+### 2.5 Explore the trend in life expectancy through time in each continent. Color by continent.
+
+``` r
+ggplot(gapminder, aes(x = year, y = lifeExp, color = continent)) +
+  stat_summary(fun = "mean", geom = "line", size = 1.2) +
+  labs(title = "Life Expectancy Over Time by Continent",
+       x = "Year",
+       y = "Life Expectancy (years)") +
+  theme_minimal()
+```
+
+![](assignment_5_files/figure-commonmark/unnamed-chunk-11-1.png)
+
+``` r
+ggplot(gapminder, aes(x = year, y = lifeExp, group = country,color = continent)) +
+  #geom_line(aes(color = continent))+
+  stat_summary(fun = "mean", geom = "line", size = 1) +   
+  facet_wrap(~continent) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+![](assignment_5_files/figure-commonmark/unnamed-chunk-11-2.png)
+
+### 2.6 From the previous plot, we see some abnormal trends in Asia and Africa, where the the life expectancy in some countries sharply dropped at certain time periods. Here, we look into what happened in Asia in more detail. First, create a new dataset by filtering only the Asian countries. Show the first 6 lines of this filtered dataset.
+
+``` r
+asia_data <- gapminder %>%
+  filter(continent == "Asia")
+
+view(asia_data)
+
+
+head(asia_data)
+```
+
+    # A tibble: 6 × 6
+      country     continent  year lifeExp      pop gdpPercap
+      <fct>       <fct>     <int>   <dbl>    <int>     <dbl>
+    1 Afghanistan Asia       1952    28.8  8425333      779.
+    2 Afghanistan Asia       1957    30.3  9240934      821.
+    3 Afghanistan Asia       1962    32.0 10267083      853.
+    4 Afghanistan Asia       1967    34.0 11537966      836.
+    5 Afghanistan Asia       1972    36.1 13079460      740.
+    6 Afghanistan Asia       1977    38.4 14880372      786.
+
+### 2.7 Using the filtered dataset, identify the countries that had abnormal trends in life expectancy by plotting, and discuss historical events possibly explaining these trends. (Hint: facet by country)
+
+Looking at the data, some countries in Asia experienced sharp drops in
+life expectancy during certain periods, while others saw steady
+increases. For example, Cambodia’s life expectancy fell dramatically in
+the late 1970s before recovering in the 1980s, and North Korea saw
+declines in the 1990s likely due to famine. In contrast, countries like
+Afghanistan, India, and China show a steady upward trend in life
+expectancy over the decades. These differences reflect the impacts of
+war, famine, political instability, and improvements in healthcare and
+living conditions.
