@@ -15,12 +15,29 @@ tribble_example <- tribble(
    1,  2.1, "apple",
    2,  3.2, "orange")
 
+tribble_example
+```
 
+    # A tibble: 2 × 3
+          a     b c     
+      <dbl> <dbl> <chr> 
+    1     1   2.1 apple 
+    2     2   3.2 orange
+
+``` r
 tibble_example <- tibble(
   a = c(1, 2),
   b = c(2.1, 3.2),
   c = c("apple", "orange"))
+
+tibble_example
 ```
+
+    # A tibble: 2 × 3
+          a     b c     
+      <dbl> <dbl> <chr> 
+    1     1   2.1 apple 
+    2     2   3.2 orange
 
 ## 1.2 Import https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/dataset2.txt into R. Change the column names into “Name”, “Weight”, “Price”.
 
@@ -103,6 +120,68 @@ data3
 view(data3)
 ```
 
+## 1.4 Import https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/dataset4.txt into R. Watch out for comments, units, and decimal marks (which are , in this case)
+
+``` r
+data <- read_lines("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/dataset4.txt")
+
+data <- data[!str_detect(data, "This is a comment")]
+
+data <- read_table2(
+  "https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/dataset4.txt",
+  comment = "This is a comment",
+  col_names = c("Name", "Weight", "Price")
+)
+
+data_clean <- data %>%
+  mutate(
+    Weight = as.numeric(str_replace(Weight, "kg", "")),
+    Price = as.numeric(str_replace(str_replace(Price, "€", ""), ",", "."))
+  )
+
+data_clean
+```
+
+    # A tibble: 4 × 3
+      Name   Weight Price
+      <chr>   <dbl> <dbl>
+    1 Name       NA  NA  
+    2 apple       1   2.9
+    3 orange      2   4.9
+    4 durian     10  19.9
+
+## 1.5 Import https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/dataset5.txt into R. Parse the columns properly. As a reminder, you can read about parsing date and time data here. Write this imported and parsed data frame into a new csv file named dataset5_new.csv in your problem_sets folder.
+
+``` r
+library(tidyverse)
+library(lubridate)
+
+library(tidyverse)
+library(lubridate)
+
+lines <- read_lines("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/dataset5.txt")
+
+data5 <- lines[-1] %>%  # remove header line
+  str_remove_all('"') %>%   # remove all quotes
+  str_split_fixed("\t", 3) %>%  # split into 3 columns
+  as_tibble()   
+
+
+colnames(data5) <- c("Name", "Expiration_Date", "Time")
+
+
+
+
+data5
+```
+
+    # A tibble: 3 × 3
+      Name                            Expiration_Date Time 
+      <chr>                           <chr>           <chr>
+    1 apple September 26, 2018 1:00am ""              ""   
+    2 orange October 2, 2018 1:00pm   ""              ""   
+    3 durian October 21, 2018 11:00am ""              ""   
+
 # Exercise 2. Weather station
 
 ## 2.1 Variable descriptions
@@ -141,29 +220,7 @@ weather <- read_delim(
   col_names = c("Variable", "Description", "Unit"),
   trim_ws = TRUE
 )
-
-
-kable(weather)
 ```
-
-| Variable | Description | Unit |
-|:---|:---|:---|
-| Item | Unit | Description |
-| AMB_TEMP | Celsius | Ambient air temperature |
-| CO | ppm | Carbon monoxide |
-| NO | ppb | Nitric oxide |
-| NO2 | ppb | Nitrogen dioxide |
-| NOx | ppb | Nitrogen oxides |
-| O3 | ppb | Ozone |
-| PM10 | μg/m3 | Particulate matter with a diameter between 2.5 and 10 μm |
-| PM2.5 | μg/m3 | Particulate matter with a diameter of 2.5 μm or less |
-| RAINFALL | mm | Rainfall |
-| RH | % | Relative humidity |
-| SO2 | ppb | Sulfur dioxide |
-| WD_HR | degress | Wind direction (The average of hour) |
-| WIND_DIREC | degress | Wind direction (The average of last ten minutes per hour) |
-| WIND_SPEED | m/sec | Wind speed (The average of last ten minutes per hour) |
-| WS_HR | m/sec | Wind speed (The average of hour) |
 
 ## 2.2 Data tidying
 
@@ -233,7 +290,7 @@ ggplot(weather_sep252015, aes(x = hour, y = AMB_TEMP)) +
   theme_minimal() 
 ```
 
-![](assignment_6_files/figure-commonmark/unnamed-chunk-7-1.png)
+![](assignment_6_files/figure-commonmark/unnamed-chunk-9-1.png)
 
 ``` r
 ggplot(weather_sep252015, aes(x = hour, y = AMB_TEMP)) +
@@ -243,7 +300,7 @@ ggplot(weather_sep252015, aes(x = hour, y = AMB_TEMP)) +
   )
 ```
 
-![](assignment_6_files/figure-commonmark/unnamed-chunk-7-2.png)
+![](assignment_6_files/figure-commonmark/unnamed-chunk-9-2.png)
 
 ## 2.4 Plot the daily average ambient temperature throughout the year with a continuous line, as shown below.
 
@@ -256,6 +313,6 @@ daily_ave <- weather_tidy %>%
 ggplot(daily_ave, aes(x = date, y= avg_temp)) + geom_line()
 ```
 
-![](assignment_6_files/figure-commonmark/unnamed-chunk-8-1.png)
+![](assignment_6_files/figure-commonmark/unnamed-chunk-10-1.png)
 
 ## 2.5 Plot the total rainfall per month in a bar chart, as shown below.

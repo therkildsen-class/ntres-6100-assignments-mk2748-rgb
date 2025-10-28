@@ -1,0 +1,54 @@
+---
+title: "Dairy Farm Data Dashboard"
+format:
+  html:
+    theme: cosmo
+    toc: true
+---
+
+#🐄 Simulated Milk Production Data
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(quarto) #install.packages("quarto")
+
+set.seed(123)
+
+
+
+
+milk_data <- tibble(
+cow_id = rep(1:10, each = 30),
+date = rep(seq(ymd("2025-09-01"), by = "day", length.out = 30), times = 10),
+feed_kg = rnorm(300, mean = 20, sd = 3),
+health_score = runif(300, 70, 100),
+milk_yield = 10 + 0.5 * feed_kg + 0.2 * health_score + rnorm(300, 0, 2)
+)
+
+
+
+
+head(milk_data)
+```
+
+#📊 Daily Milk Yield per Cow
+
+```{r}
+milk_data %>%
+ggplot(aes(x = date, y = milk_yield, color = factor(cow_id))) +
+geom_line() +
+theme_minimal() +
+labs(title = "Daily Milk Yield per Cow", x = "Date", y = "Milk Yield (L)", color = "Cow ID")
+```
+
+#📈 Feed vs Milk Yield Relationship
+
+```{r}
+milk_data %>%
+ggplot(aes(x = feed_kg, y = milk_yield)) +
+geom_point(alpha = 0.6, color = "darkgreen") +
+geom_smooth(method = "lm", color = "black") +
+theme_minimal() +
+labs(title = "Feed Amount vs Milk Yield", x = "Feed (kg/day)", y = "Milk Yield (L)")
+```

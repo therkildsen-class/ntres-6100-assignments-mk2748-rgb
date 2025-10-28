@@ -24,11 +24,15 @@ tribble_example <- tribble(
    1,  2.1, "apple",
    2,  3.2, "orange")
 
+tribble_example
+
 
 tibble_example <- tibble(
   a = c(1, 2),
   b = c(2.1, 3.2),
   c = c("apple", "orange"))
+
+tibble_example
 
 ```
 
@@ -90,6 +94,62 @@ view(data3)
 
 ```
 
+## 1.4 Import https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/dataset4.txt into R. Watch out for comments, units, and decimal marks (which are , in this case)
+
+```{r}
+
+data <- read_lines("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/dataset4.txt")
+
+data <- data[!str_detect(data, "This is a comment")]
+
+data <- read_table2(
+  "https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/dataset4.txt",
+  comment = "This is a comment",
+  col_names = c("Name", "Weight", "Price")
+)
+
+data_clean <- data %>%
+  mutate(
+    Weight = as.numeric(str_replace(Weight, "kg", "")),
+    Price = as.numeric(str_replace(str_replace(Price, "€", ""), ",", "."))
+  )
+
+data_clean
+
+
+```
+
+## 1.5 Import https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/dataset5.txt into R. Parse the columns properly. As a reminder, you can read about parsing date and time data here. Write this imported and parsed data frame into a new csv file named dataset5_new.csv in your problem_sets folder.
+
+```{r}
+
+library(tidyverse)
+library(lubridate)
+
+library(tidyverse)
+library(lubridate)
+
+lines <- read_lines("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/dataset5.txt")
+
+data5 <- lines[-1] %>%  # remove header line
+  str_remove_all('"') %>%   # remove all quotes
+  str_split_fixed("\t", 3) %>%  # split into 3 columns
+  as_tibble()   
+
+
+colnames(data5) <- c("Name", "Expiration_Date", "Time")
+
+
+
+
+data5
+
+
+
+```
+
+
+
 # Exercise 2. Weather station
 
 ## 2.1 Variable descriptions
@@ -109,7 +169,6 @@ weather <- read_delim(
 )
 
 
-kable(weather)
 
 ```
 
