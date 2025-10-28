@@ -18,8 +18,8 @@ Please use the following table to grade the student's assignment:
 |      4      |        X        |                     |               |
 |      5      |                 |          X          |               |
 |      6      |                 |          X          |               |
-|      7      |                 |                     |       X       |
-|      8      |                 |                     |               |
+|      7      |                 |                     |      X         |
+|      8      |                 |                     |       X        |
 |      9      |                 |                     |               |
 
 Assignment 2: <https://github.com/mk2748-rgb/Assignment2_project.git>
