@@ -175,54 +175,42 @@ weather <- read_delim(
 ## 2.2 Data tidying
 
 ```{r}
-url <- "https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/2015y_Weather_Station.csv"
+
+library(readr) #install.packages("readr")
+library(tidyverse)
+library(lubridate)
+
+weather_Taiwan <- read_csv(
+  "https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/2015y_Weather_Station.csv",
+  col_names = TRUE,
+  col_types = cols(.default = "c")
+)
+
+weather_Taiwan
+head(weather_Taiwan, 10)
 
 
-weather <- read_csv(url)
-weather <- read_csv("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/2015y_Weather_Station.csv")
+weather_Taiwan_cleaned <- weather_Taiwan |>
+  pivot_longer(cols= '00':'23', names_to= "hour", values_to= "value") |>
+  pivot_wider(names_from = item, values_from = value) |>
+  mutate(RAINFALL = ifelse(RAINFALL == "NR", "0", RAINFALL)) |>
+  mutate(date = as.Date(date),
+         across(AMB_TEMP:PM10, as.numeric),
+         hour = hms :: as_hms(paste0(hour, ":00:00")))
 
-
- 
-head(weather,6) %>% select(1:10)
-
-weather_untidy <- read_csv("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/2015y_Weather_Station.csv")
-
-
-weather_long <- weather_untidy %>%
-  mutate(across(`00`:`23`, as.character)) %>% 
-  pivot_longer(
-    cols = `00`:`23`,
-    names_to = "hour",
-    values_to = "value"
-  )
-
-weather_tidy <- weather_long %>%
-  pivot_wider(
-    names_from = item,
-    values_from = value
-  )
-
- 
-head(weather_tidy,6) %>% select(1:10)
+weather_Taiwan_cleaned |>
+  select(1:10) |>
+  head()
 
 ```
 
 ## 2.3 Using this cleaned dataset, plot the daily variation in ambient temperature on September 25, 2015, as shown below.
 
 ```{r}
-weather_sep252015<- weather_tidy %>%
-  filter(date == as.Date("2015-09-25"))
 
-ggplot(weather_sep252015, aes(x = hour, y = AMB_TEMP)) +
-  geom_line(color = "Station") +
-  labs(x = "hour", y = "AMB_TEMP") +
-  theme_minimal() 
-
-ggplot(weather_sep252015, aes(x = hour, y = AMB_TEMP)) +
-  geom_line() + geom_point() +
-  labs(x = "Hour",
-    y = "AMB_TEMP"
-  )
+weather_Taiwan_cleaned |>
+  filter(date == "2015-09-25") |>
+  ggplot(aes(x = hour, y=AMB_TEMP)) + geom_line()
 
 
 ```
@@ -231,12 +219,11 @@ ggplot(weather_sep252015, aes(x = hour, y = AMB_TEMP)) +
 
 ```{r}
 
-daily_ave <- weather_tidy %>%
-  group_by(date) %>%
-  summarise(avg_temp = mean(AMB_TEMP, na.rm = TRUE))
+weather_Taiwan_cleaned |> 
+  group_by(date) |>
+  summarize(daily_average_ambient_temp= mean(AMB_TEMP)) |>
+  ggplot(aes(x=date, y=daily_average_ambient_temp)) + geom_line()
 
-
-ggplot(daily_ave, aes(x = date, y= avg_temp)) + geom_line()
   
 
 ```
@@ -245,6 +232,23 @@ ggplot(daily_ave, aes(x = date, y= avg_temp)) + geom_line()
 
 ```{r}
 
-
-
+weather_Taiwan_cleaned |> 
+  mutate(year = format(date, "%Y"), month = format(date, "%m"), day = format(date, "%d"), RAINFALL = as.numeric(RAINFALL))|>
+  group_by(month) |>
+  summarise(MonthlyRainfall = sum(RAINFALL, na.rm = TRUE)) |>
+  ggplot(aes(x=month, y=MonthlyRainfall)) + geom_col()
+                
 ```
+
+##2.6 Plot the per hour variation in PM2.5 in the first week of September with a continuous line, as shown below.
+
+
+```{r}
+weather_Taiwan_cleaned |> 
+  filter(format(date, "%m") == "09", format(date, "%d") <= "07") |> 
+  mutate(time_str = paste(date, hour), PM2.5 = as.numeric(PM2.5)) |> 
+  mutate(time = parse_datetime(time_str, format = "%Y-%m-%d %H:%M:%S")) |> 
+  ggplot(aes(x = time, y = PM2.5)) +
+  geom_line()
+```
+

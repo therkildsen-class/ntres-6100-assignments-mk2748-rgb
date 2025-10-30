@@ -225,94 +225,125 @@ weather <- read_delim(
 ## 2.2 Data tidying
 
 ``` r
-url <- "https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/2015y_Weather_Station.csv"
+library(readr) #install.packages("readr")
+library(tidyverse)
+library(lubridate)
 
+weather_Taiwan <- read_csv(
+  "https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/2015y_Weather_Station.csv",
+  col_names = TRUE,
+  col_types = cols(.default = "c")
+)
 
-weather <- read_csv(url)
-weather <- read_csv("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/2015y_Weather_Station.csv")
-
-
- 
-head(weather,6) %>% select(1:10)
+weather_Taiwan
 ```
 
-    # A tibble: 6 × 10
-      date       station item      `00`  `01`  `02`  `03` `04`   `05`  `06`
-      <date>     <chr>   <chr>    <dbl> <dbl> <dbl> <dbl> <chr> <dbl> <dbl>
-    1 2015-01-01 Cailiao AMB_TEMP 16     16   15    15    15    14    14   
-    2 2015-01-01 Cailiao CO        0.74   0.7  0.66  0.61 0.51   0.51  0.51
-    3 2015-01-01 Cailiao NO        1      0.8  1.1   1.7  2      1.7   1.9 
-    4 2015-01-01 Cailiao NO2      15     13   13    12    11    13    13   
-    5 2015-01-01 Cailiao NOx      16     14   14    13    13    15    15   
-    6 2015-01-01 Cailiao O3       35     36   35    34    34    32    30   
+    # A tibble: 5,460 × 27
+       date      station item  `00`  `01`  `02`  `03`  `04`  `05`  `06`  `07`  `08` 
+       <chr>     <chr>   <chr> <chr> <chr> <chr> <chr> <chr> <chr> <chr> <chr> <chr>
+     1 2015/01/… Cailiao AMB_… 16    16    15    15    15    14    14    14    14   
+     2 2015/01/… Cailiao CO    0.74  0.7   0.66  0.61  0.51  0.51  0.51  0.6   0.62 
+     3 2015/01/… Cailiao NO    1     0.8   1.1   1.7   2     1.7   1.9   2.4   3.4  
+     4 2015/01/… Cailiao NO2   15    13    13    12    11    13    13    16    16   
+     5 2015/01/… Cailiao NOx   16    14    14    13    13    15    15    18    19   
+     6 2015/01/… Cailiao O3    35    36    35    34    34    32    30    26    26   
+     7 2015/01/… Cailiao PM10  171   174   160   142   123   110   104   104   109  
+     8 2015/01/… Cailiao PM2.5 76    78    69    60    52    44    40    41    44   
+     9 2015/01/… Cailiao RAIN… NR    NR    NR    NR    NR    NR    NR    NR    NR   
+    10 2015/01/… Cailiao RH    57    57    58    59    59    57    57    56    53   
+    # ℹ 5,450 more rows
+    # ℹ 15 more variables: `09` <chr>, `10` <chr>, `11` <chr>, `12` <chr>,
+    #   `13` <chr>, `14` <chr>, `15` <chr>, `16` <chr>, `17` <chr>, `18` <chr>,
+    #   `19` <chr>, `20` <chr>, `21` <chr>, `22` <chr>, `23` <chr>
 
 ``` r
-weather_untidy <- read_csv("https://raw.githubusercontent.com/nt246/NTRES-6100-data-science/master/datasets/2015y_Weather_Station.csv")
+head(weather_Taiwan, 10)
+```
 
+    # A tibble: 10 × 27
+       date      station item  `00`  `01`  `02`  `03`  `04`  `05`  `06`  `07`  `08` 
+       <chr>     <chr>   <chr> <chr> <chr> <chr> <chr> <chr> <chr> <chr> <chr> <chr>
+     1 2015/01/… Cailiao AMB_… 16    16    15    15    15    14    14    14    14   
+     2 2015/01/… Cailiao CO    0.74  0.7   0.66  0.61  0.51  0.51  0.51  0.6   0.62 
+     3 2015/01/… Cailiao NO    1     0.8   1.1   1.7   2     1.7   1.9   2.4   3.4  
+     4 2015/01/… Cailiao NO2   15    13    13    12    11    13    13    16    16   
+     5 2015/01/… Cailiao NOx   16    14    14    13    13    15    15    18    19   
+     6 2015/01/… Cailiao O3    35    36    35    34    34    32    30    26    26   
+     7 2015/01/… Cailiao PM10  171   174   160   142   123   110   104   104   109  
+     8 2015/01/… Cailiao PM2.5 76    78    69    60    52    44    40    41    44   
+     9 2015/01/… Cailiao RAIN… NR    NR    NR    NR    NR    NR    NR    NR    NR   
+    10 2015/01/… Cailiao RH    57    57    58    59    59    57    57    56    53   
+    # ℹ 15 more variables: `09` <chr>, `10` <chr>, `11` <chr>, `12` <chr>,
+    #   `13` <chr>, `14` <chr>, `15` <chr>, `16` <chr>, `17` <chr>, `18` <chr>,
+    #   `19` <chr>, `20` <chr>, `21` <chr>, `22` <chr>, `23` <chr>
 
-weather_long <- weather_untidy %>%
-  mutate(across(`00`:`23`, as.character)) %>% 
-  pivot_longer(
-    cols = `00`:`23`,
-    names_to = "hour",
-    values_to = "value"
-  )
+``` r
+weather_Taiwan_cleaned <- weather_Taiwan |>
+  pivot_longer(cols= '00':'23', names_to= "hour", values_to= "value") |>
+  pivot_wider(names_from = item, values_from = value) |>
+  mutate(RAINFALL = ifelse(RAINFALL == "NR", "0", RAINFALL)) |>
+  mutate(date = as.Date(date),
+         across(AMB_TEMP:PM10, as.numeric),
+         hour = hms :: as_hms(paste0(hour, ":00:00")))
 
-weather_tidy <- weather_long %>%
-  pivot_wider(
-    names_from = item,
-    values_from = value
-  )
-
- 
-head(weather_tidy,6) %>% select(1:10)
+weather_Taiwan_cleaned |>
+  select(1:10) |>
+  head()
 ```
 
     # A tibble: 6 × 10
-      date       station hour  AMB_TEMP CO    NO    NO2   NOx   O3    PM10 
-      <date>     <chr>   <chr> <chr>    <chr> <chr> <chr> <chr> <chr> <chr>
-    1 2015-01-01 Cailiao 00    16       0.74  1     15    16    35    171  
-    2 2015-01-01 Cailiao 01    16       0.7   0.8   13    14    36    174  
-    3 2015-01-01 Cailiao 02    15       0.66  1.1   13    14    35    160  
-    4 2015-01-01 Cailiao 03    15       0.61  1.7   12    13    34    142  
-    5 2015-01-01 Cailiao 04    15       0.51  2     11    13    34    123  
-    6 2015-01-01 Cailiao 05    14       0.51  1.7   13    15    32    110  
+      date       station hour   AMB_TEMP    CO    NO   NO2   NOx    O3  PM10
+      <date>     <chr>   <time>    <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+    1 2015-01-01 Cailiao 00:00        16  0.74   1      15    16    35   171
+    2 2015-01-01 Cailiao 01:00        16  0.7    0.8    13    14    36   174
+    3 2015-01-01 Cailiao 02:00        15  0.66   1.1    13    14    35   160
+    4 2015-01-01 Cailiao 03:00        15  0.61   1.7    12    13    34   142
+    5 2015-01-01 Cailiao 04:00        15  0.51   2      11    13    34   123
+    6 2015-01-01 Cailiao 05:00        14  0.51   1.7    13    15    32   110
 
 ## 2.3 Using this cleaned dataset, plot the daily variation in ambient temperature on September 25, 2015, as shown below.
 
 ``` r
-weather_sep252015<- weather_tidy %>%
-  filter(date == as.Date("2015-09-25"))
-
-ggplot(weather_sep252015, aes(x = hour, y = AMB_TEMP)) +
-  geom_line(color = "Station") +
-  labs(x = "hour", y = "AMB_TEMP") +
-  theme_minimal() 
+weather_Taiwan_cleaned |>
+  filter(date == "2015-09-25") |>
+  ggplot(aes(x = hour, y=AMB_TEMP)) + geom_line()
 ```
 
 ![](assignment_6_files/figure-commonmark/unnamed-chunk-9-1.png)
 
-``` r
-ggplot(weather_sep252015, aes(x = hour, y = AMB_TEMP)) +
-  geom_line() + geom_point() +
-  labs(x = "Hour",
-    y = "AMB_TEMP"
-  )
-```
-
-![](assignment_6_files/figure-commonmark/unnamed-chunk-9-2.png)
-
 ## 2.4 Plot the daily average ambient temperature throughout the year with a continuous line, as shown below.
 
 ``` r
-daily_ave <- weather_tidy %>%
-  group_by(date) %>%
-  summarise(avg_temp = mean(AMB_TEMP, na.rm = TRUE))
-
-
-ggplot(daily_ave, aes(x = date, y= avg_temp)) + geom_line()
+weather_Taiwan_cleaned |> 
+  group_by(date) |>
+  summarize(daily_average_ambient_temp= mean(AMB_TEMP)) |>
+  ggplot(aes(x=date, y=daily_average_ambient_temp)) + geom_line()
 ```
 
 ![](assignment_6_files/figure-commonmark/unnamed-chunk-10-1.png)
 
 ## 2.5 Plot the total rainfall per month in a bar chart, as shown below.
+
+``` r
+weather_Taiwan_cleaned |> 
+  mutate(year = format(date, "%Y"), month = format(date, "%m"), day = format(date, "%d"), RAINFALL = as.numeric(RAINFALL))|>
+  group_by(month) |>
+  summarise(MonthlyRainfall = sum(RAINFALL, na.rm = TRUE)) |>
+  ggplot(aes(x=month, y=MonthlyRainfall)) + geom_col()
+```
+
+![](assignment_6_files/figure-commonmark/unnamed-chunk-11-1.png)
+
+\##2.6 Plot the per hour variation in PM2.5 in the first week of
+September with a continuous line, as shown below.
+
+``` r
+weather_Taiwan_cleaned |> 
+  filter(format(date, "%m") == "09", format(date, "%d") <= "07") |> 
+  mutate(time_str = paste(date, hour), PM2.5 = as.numeric(PM2.5)) |> 
+  mutate(time = parse_datetime(time_str, format = "%Y-%m-%d %H:%M:%S")) |> 
+  ggplot(aes(x = time, y = PM2.5)) +
+  geom_line()
+```
+
+![](assignment_6_files/figure-commonmark/unnamed-chunk-12-1.png)
