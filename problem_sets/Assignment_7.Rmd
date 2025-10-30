@@ -74,7 +74,7 @@ First, convert the `q_1b` dataset to longer format such that the population and 
 q_2a <- q_1b |>
   pivot_longer(
     cols = c(population, electoral_votes),
-    names_to = "type",
+    names_to = "metric",
     values_to = "value"
   )
 
@@ -86,23 +86,12 @@ head(q_2a)
 Then, sum up the number of electoral votes and population size across all states for each candidate. Name this new dataset `q_2b`, and print it as shown below.
 
 ```{r}
-q_2b1 <- q_1b |>
-  group_by(winner) |>
-  summarize(
-    population = sum(population),
-    electoral_votes = sum(electoral_votes)
-  )
+q_2b <- q_2a |> 
+  group_by(winner, metric) |> 
+  summarise(value = sum(value))
 
-q_2b2 <- q_2b1 |>
-  pivot_longer(
-    cols = c(population, electoral_votes),
-    names_to = "metric",
-    values_to = "value"
-  ) |>
-  select(metric, winner, value)
-
-kable(q_2b2)
-
+q_2b |> 
+  kable()
 ```
 
 ### 2c.
@@ -112,19 +101,10 @@ Use the `q_2b` dataset to contruct a bar plot to show the final electoral vote s
 Hint: `geom_col(position = "fill")` might be helpful.
 
 ```{r}
-q_2c <- q_2b2 %>%
-  filter(metric %in% c("electoral_votes", "population")) %>%
-  mutate(scenario = ifelse(metric == "electoral_votes", 
-                           "electrocal_votes", 
-                           "population"))
-
-ggplot(q_2c, aes(x = scenario, y = value, fill = winner)) +
-  geom_col(position = "fill") +   # makes it proportion of total
-  scale_y_continuous(labels = scales::percent_format()) +
-  labs(x = "Metric",
-       y = "Value",
-       fill = "Candidate") +
-  theme_minimal()
+q_2b |> 
+  ggplot(aes(x = metric, y = value, fill = winner)) +
+  geom_col(position = "fill") +
+  scale_y_continuous()
 
 ```
 
@@ -139,25 +119,28 @@ First, from [this dataset on GitHub](https://raw.githubusercontent.com/kshaffer/
 *Hint: `pivot_longer()` may be useful in here.*
 
 ```{r}
-votes <- read.csv("https://raw.githubusercontent.com/kshaffer/election2016/master/2016ElectionResultsByState.csv")
+q_3a <- read_csv("https://raw.githubusercontent.com/kshaffer/election2016/master/2016ElectionResultsByState.csv")
 
-votes_long <- votes %>%
-  pivot_longer(cols = c(clinton, trump, johnson, stein, mcmullin, others),
-               names_to = "candidate",
-               values_to = "votes")
 
-votes_long <- votes_long %>%
-  mutate(winner = ifelse(candidate == "Clinton", "clinton",
-                         ifelse(candidate == "Trump", "trump", "others")))
-
-q_3a <- votes_long %>%
-  group_by(winner) %>%
-  summarise(value = sum(votes, na.rm = TRUE)) %>%
-  mutate(metric = "popular_votes") %>%
+q_3a <- q_3a |> 
+  select(-totalVotes) |> 
+  pivot_longer(
+    cols = ends_with("Votes"),
+    names_to = "candidate",
+    values_to = "votes") |> 
+  mutate(
+    winner = case_when(
+      candidate == "clintonVotes" ~ "Clinton",
+      candidate == "trumpVotes" ~ "Trump",
+      TRUE ~ "others")) |> 
+  group_by(winner) |>  
+  summarise(value = sum(votes)) |>  
+  mutate(metric = "popular_votes") |> 
   select(metric, winner, value)
 
-q_3a
-
+q_3a |> 
+  arrange(-value) |> 
+  kable()
 ```
 
 ### 3b.
@@ -165,8 +148,12 @@ q_3a
 Combine the `q_2b` dataset with the `q_3a` dataset. Call this new dataset `q_3b`, and print it as shown below.
 
 ```{r}
-q_3b <- rbind(q_2b2, q_3a)
-q_3b
+q_3b <- q_2b |> 
+  full_join(q_3a, join_by(metric, winner, value)) |> 
+  arrange(metric)
+
+q_3b |> 
+  kable()
 
 ```
 
@@ -175,14 +162,10 @@ q_3b
 Lastly, use the `q_3b` dataset to contruct a bar plot to show the final vote share under the scenarios of 1) each state has the number of electoral votes that it currently has, 2) each state has the number of electoral votes that is exactly proportional to its population size, and 3) the election result is determined by the popular vote.
 
 ```{r}
-library(ggplot2) #install.packages(ggplot2)
-
-ggplot(q_3b, aes(x = metric, y = value, fill = winner)) +
-  geom_col(position = "fill") +             
-  scale_y_continuous(labels = scales::percent_format()) + 
-  labs(x = "metric", y = "value", fill = "Candidate") +
-  theme_minimal()
-
+q_3b |> 
+  ggplot(aes(x = metric, y = value, fill = winner)) +
+  geom_col(position = "fill") +
+  scale_y_continuous()
 
 ```
 
@@ -197,13 +180,15 @@ The polling data is stored in the data frame `polls_us_election_2016`. For the s
 *Hint: `group_by()` and `slice_max()` can be useful for this question. Check out the help file for `slice_max()` for more info.*
 
 ```{r}
-q_4a <- polls_us_election_2016 %>%
-  filter(pollster == "Ipsos", state != "US") %>%  
-  group_by(state) %>%                           
-  slice_max(enddate, n = 1) %>%                 
-  select(state, adjpoll_clinton, adjpoll_trump) 
+q_4a <- polls_us_election_2016 |> 
+  filter(pollster == "Ipsos", state != "U.S.")  |> 
+  group_by(state) |> 
+  slice_max(enddate) |> 
+  select(state, adjpoll_clinton, adjpoll_trump)
 
-q_4a
+q_4a |> 
+  head(6) |> 
+  kable()
 
 ```
 
@@ -224,22 +209,18 @@ Combine the `q_4a` dataset with the `q_1b` dataset with a join function. The res
     Keep only the columns `state`, `polling_error`, `result`, `electoral_votes`. Name the new dataset `q_4b` and show its first 6 rows.
 
 ```{r}
-library(dplyr)
-library(stringr) 
-
-q_4b <- q_4a %>%
-  inner_join(q_1b, by = "state") %>%  # join poll with actual results
-  mutate(
-    polling_margin = adjpoll_clinton - adjpoll_trump,
-    actual_margin = clinton - trump,
-    polling_error = polling_margin - actual_margin,
-    predicted_winner = ifelse(adjpoll_clinton > adjpoll_trump, "clinton", "trump"),
-    result = ifelse(winner == predicted_winner, 
-                    "correct prediction", 
-                    str_c("unexpected ", winner, " win"))
-  ) %>%
+q_4b <- q_4a |> 
+  left_join(q_1b) |> 
+  mutate(polling_margin = adjpoll_trump - adjpoll_clinton, 
+         actual_margin = trump - clinton, 
+         polling_error = actual_margin - polling_margin, 
+         predicted_winner = ifelse (adjpoll_clinton > adjpoll_trump, "clinton", "trump"), 
+         result = ifelse(winner == predicted_winner, "correct prediction", str_c("unexpected ", winner, " win"))) |> 
   select(state, polling_error, result, electoral_votes)
-head(q_4b)
+
+q_4b |> 
+  head(6) |> 
+  kable()
 
 ```
 
@@ -248,20 +229,8 @@ head(q_4b)
 Generate the following plot with the `q_4b` dataset. Use chunk options to adjust the dimensions of the plot to make it longer than the default dimension. Based on this plot, where did the polls get wrong in the 2016 election?
 
 ```{r}
-ggplot(q_4b, aes(x = polling_error, y = state)) +
-  geom_point(aes(size = electoral_votes, color = result), alpha = 0.7) +
-  scale_color_manual(values = c("correct prediction" = "red", 
-                                "unexpected trump win" = "turquoise3")) +
-  scale_size(range = c(3, 10)) +
-  theme_minimal() +
-  theme(panel.grid.major.y = element_blank(),
-        legend.position = "right") +
-  labs(x = "polling_error",
-       y = "state",
-       size = "electoral_votes",
-       color = "result")
-
-
-
+q_4b |> 
+  ggplot(mapping = aes(x = polling_error, y = state, color = result, size = electoral_votes)) +
+  geom_point()
 
 ```
